@@ -1,0 +1,368 @@
+:root {
+    --p: #273238;
+    --pl: #62727b;
+    --pd: #102027;
+    --pt: #fff;
+
+    --s: #00c853;
+    --sl: #5efc82;
+    --sd: #009624;
+    --st: #000;
+}
+
+body {
+    background-color: var(--p);
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    font-family: "Roboto", sans-serif;
+}
+
+.noselect {
+    user-select: none;
+    -moz-user-select: none;
+}
+.shadow-small {
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.4);
+}
+.noscroll::-webkit-scrollbar {
+    display: none;
+}
+.noscroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.top-bar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: inline-block;
+    width: 100vw;
+    height: 48px;
+    border-bottom: 1px solid var(--s);
+    background-color: var(--pd);
+    color: var(--pt);
+    z-index: 100;
+    box-sizing: border-box;
+}
+.top-bar .icon {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    font-size: 32px;
+    transform: translate(0, -50%);
+}
+.top-bar .title {
+    position: absolute;
+    top: 50%;
+    left: 42px;
+    font-size: 24px;
+    transform: translate(0, -50%);
+}
+
+.server-container {
+    position: absolute;
+    top: 48px;
+    left: 0px;
+    display: inline-block;
+    width: 15vw;
+    height: calc(100vh - 48px);
+    border-right: 1px solid var(--pl);
+    box-sizing: border-box;
+}
+.server-container .new-server-button {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 50;
+    border: none;
+    display: inline-block;
+    height: 48px;
+    width: 48px;
+    border-radius: 24px;
+    color: var(--st);
+    background-color: var(--s);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.server-container .new-server-button:hover {
+    background-color: var(--sd);
+}
+.server-container .new-server-button span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 32px;
+    transform: translate(-50%, -50%);
+}
+.server-container .server-list {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.panel {
+    position: absolute;
+    top: 48px;
+    left: 15vw;
+    display: inline-block;
+    width: 85vw;
+    height: calc(100vh - 48px);
+}
+.panel .no-server {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 4em;
+    transform: translate(-50%, -50%);
+    color: var(--pt);
+    opacity: 0.15;
+    display: inline-block;
+    width: fit-content;
+    white-space: nowrap;
+    z-index: 5;
+}
+.panel > div .panel-top {
+    background-color: var(--p);
+    border-bottom: 1px solid var(--pl);
+    box-sizing: border-box;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    color: var(--pt);
+    z-index: 50;
+}
+.panel > div .panel-top .material-icons {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    font-size: 24px;
+    transform: translate(0, -50%);
+}
+.panel > div .panel-top .title {
+    position: absolute;
+    top: 50%;
+    left: 34px;
+    font-size: 16px;
+    transform: translate(0, -50%);
+}
+
+.panel > div .panel-content {
+    position: absolute;
+    top: 40px;
+    left: 0px;
+    display: inline-block;
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow-y: scroll;
+}
+
+.panel > div {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: var(--p);
+    overflow: hidden;
+}
+
+.panel .new-server {
+    z-index: 15;
+}
+.panel .new-server .jar-upload {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: inline-block;
+    width: calc(100% - 30px);
+    box-sizing: border-box;
+    height: 30%;
+    border: 2px dashed var(--pl);
+    transition: background-color 0.2s, border-color 0.2s;
+    border-radius: 15px;
+}
+.panel .new-server .jar-upload:hover {
+    background-color: var(--pd);
+}
+.panel .new-server .jar-upload input {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 1000;
+    cursor: pointer;
+}
+.panel .new-server .jar-upload .material-icons {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    font-size: 2em;
+    color: var(--pt);
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+.panel .new-server .jar-upload .upload-title {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    font-size: 1.5em;
+    color: var(--pt);
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+
+.panel .new-server .orthis {
+    position: absolute;
+    top: calc(40px + 30%);
+    left: 20px;
+    color: white;
+}
+.panel .new-server .version-input {
+    position: absolute;
+    top: calc(30px + 30%);
+    left: 50px;
+    color: white;
+    padding: 10px;
+    background-color: var(--pl);
+    color: var(--pt);
+    border: none;
+    border-radius: 5px;
+    display: inline-block;
+    height: fit-content;
+    width: calc(100% - 65px);
+    box-sizing: border-box;
+}
+.panel .new-server .version-input:focus {
+    outline: none;
+}
+
+.panel .new-server .server-settings {
+    position: absolute;
+    top: calc(30% + 75px);
+    padding: 15px;
+    left: 15px;
+    display: inline-block;
+    width: calc(100% - 30px);
+    height: calc(70% - 125px);
+    box-sizing: border-box;
+    overflow-y: scroll;
+    background-color: var(--pd);
+    border-radius: 5px;
+    padding-bottom: 5px;
+}
+.panel .new-server .server-settings .input {
+    position: relative;
+    padding: 5px;
+    box-sizing: border-box;
+    display: inline-block;
+    width: 100%;
+    height: 32px;
+    color: var(--pt);
+    margin-bottom: 10px;
+}
+.panel .new-server .server-settings .input .material-icons {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translate(0, -50%);
+    font-size: 24px;
+}
+.panel .new-server .server-settings .input .title {
+    position: absolute;
+    top: 50%;
+    left: 34px;
+    transform: translate(0, -50%);
+    font-size: 16px;
+}
+.panel .new-server .server-settings .input input,
+.panel .new-server .server-settings .input select {
+    position: absolute;
+    top: 0px;
+    left: 15%;
+    border: none;
+    font-size: 14px;
+    display: inline-block;
+    width: 85%;
+    height: 100%;
+    border-radius: 5px;
+    padding: auto;
+    background-color: var(--pl);
+    color: var(--pt);
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+.panel .new-server .server-settings .input input:focus {
+    outline: none;
+}
+
+.panel .new-server .button-group {
+    position: absolute;
+    display: inline-block;
+    width: calc(100% - 30px);
+    height: 40px;
+    bottom: 5px;
+    left: 15px;
+}
+.panel .new-server .button-group button.cancel {
+    background-color: #db3125;
+    color: var(--pt);
+    transition: background-color 0.2s;
+    display: inline-block;
+    width: calc(50% - 2.5px);
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.panel .new-server .button-group button.cancel:hover {
+    background-color: #bd2b21;
+}
+.panel .new-server .button-group button.submit {
+    background-color: var(--sd);
+    color: var(--pt);
+    transition: background-color 0.2s;
+    display: inline-block;
+    width: calc(50% - 2.5px);
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: calc(50% + 2.5px);
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.panel .new-server .button-group button.submit:hover {
+    background-color: #00831f;
+}
+.panel .new-server .button-group button .material-icons {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translate(0, -50%);
+}
+.panel .new-server .button-group button .title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+}

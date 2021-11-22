@@ -195,6 +195,9 @@ async def new_server(req: Request, res: Response):
         with open(os.path.join(CONFIG['server_folder'], fields['name'], 'server.jar'), 'wb') as fd:
             for chunk in response.iter_content(chunk_size=128):
                 fd.write(chunk)
+    else:
+        with open(os.path.join(CONFIG['server_folder'], fields['name'], 'server.jar'), 'wb') as fd:
+            fd.write(base64.b64decode(fields['jar'].split('base64,')[1].encode('utf-8')))
     
     manager.start_server(fields['name'])
     
@@ -295,3 +298,14 @@ async def get_server_info(name: str, res: Response):
     else:
         res.status_code = HTTP_404_NOT_FOUND
         return {'result': 'failure', 'reason': f'Server {name} does not exist.'}
+
+@app.get('/servers')
+async def list_servers():
+    server_dict = {}
+    for s in database.servers.find():
+        if os.path.exists(os.path.join(CONFIG['server_folder'], s['name'])):
+            server_dict[s['name']] = {
+                'autostart': s['enabled'],
+                'running': s['name'] in manager.servers.keys()
+            }
+    return server_dict

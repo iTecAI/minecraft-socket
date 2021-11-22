@@ -4,7 +4,19 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Minecraft Socket Frontend</title>
+        <title>Server Manager</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="shortcut icon" href="web/favicon.ico" type="image/x-icon" />
+        <link rel="stylesheet" href="web/index.css" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
         <script
             src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -13,5 +25,129 @@
         <script src="web/sha256.js"></script>
         <script src="web/index.js"></script>
     </head>
-    <body></body>
+    <body>
+        <div class="top-bar noselect shadow-small">
+            <span class="material-icons icon">settings</span>
+            <span class="title">Server Manager</span>
+        </div>
+        <div class="server-container noscroll">
+            <button class="new-server-button shadow-small noselect">
+                <span class="material-icons">add</span>
+            </button>
+            <div class="server-list noscroll"></div>
+        </div>
+        <div class="panel noscroll">
+            <div class="console"></div>
+            <div class="settings"></div>
+            <div class="new-server">
+                <div class="panel-top noselect">
+                    <span class="material-icons">create</span>
+                    <span class="title">New Server</span>
+                </div>
+                <div class="panel-content noscroll">
+                    <div class="jar-upload">
+                        <input type="file" />
+                        <span class="material-icons noselect">upload</span>
+                        <span class="upload-title noselect">Server JAR</span>
+                    </div>
+                    <span class="orthis">OR</span>
+                    <input list="versions" class="version-input" />
+                    <datalist id="versions"> </datalist>
+                    <div class="server-settings noscroll">
+                        <div class="input server-name">
+                            <span class="material-icons">edit</span>
+                            <span class="title">Server Name</span>
+                            <input placeholder="New Server" />
+                        </div>
+                        <div class="input server-motd">
+                            <span class="material-icons">message</span>
+                            <span class="title">MOTD</span>
+                            <input placeholder="A Minecraft Server" />
+                        </div>
+                        <div class="input server-ip">
+                            <span class="material-icons">dns</span>
+                            <span class="title">Server IP</span>
+                            <input
+                                placeholder="Default is blank so you should probably leave this box blank"
+                            />
+                        </div>
+                        <div class="input server-port">
+                            <span class="material-icons">dns</span>
+                            <span class="title">Server Port</span>
+                            <input placeholder="25565" />
+                        </div>
+                        <div class="input server-max-players">
+                            <span class="material-icons">person</span>
+                            <span class="title">Max Players</span>
+                            <input placeholder="20" />
+                        </div>
+                        <div class="input server-seed">
+                            <span class="material-icons">casino</span>
+                            <span class="title">World Seed</span>
+                            <input placeholder="fartlol" />
+                        </div>
+                        <div class="input server-gamemode">
+                            <span class="material-icons">sports_esports</span>
+                            <span class="title">Gamemode</span>
+                            <select name="gamemode" id="gamemode-select">
+                                <option value="survival">Survival</option>
+                                <option value="creative">Creative</option>
+                                <option value="spectator">Spectator</option>
+                            </select>
+                        </div>
+                        <div class="input server-difficulty">
+                            <span class="material-icons"
+                                >escalator_warning</span
+                            >
+                            <span class="title">Difficulty</span>
+                            <select name="difficulty" id="difficulty-select">
+                                <option value="hard">Hard</option>
+                                <option value="normal">Normal</option>
+                                <option value="easy">Easy</option>
+                            </select>
+                        </div>
+                        <div class="input server-whitelist">
+                            <span class="material-icons">list_alt</span>
+                            <span class="title">Whitelist</span>
+                            <select name="whitelist" id="whitelist-select">
+                                <option value="true">On</option>
+                                <option value="false">Off</option>
+                            </select>
+                        </div>
+                        <div class="input server-cmdblocks">
+                            <span class="material-icons">code</span>
+                            <span class="title">Command Blocks</span>
+                            <select name="cmdblocks" id="cmdblocks-select">
+                                <option value="true">Enabled</option>
+                                <option value="false">Disabled</option>
+                            </select>
+                        </div>
+                        <div class="input server-args">
+                            <span class="material-icons">code</span>
+                            <span class="title">Java Args</span>
+                            <input
+                                placeholder="-Xgarbagecollector_or_something_idk"
+                            />
+                        </div>
+                        <div class="input server-memory">
+                            <span class="material-icons">memory</span>
+                            <span class="title">Server Memory (GB)</span>
+                            <input placeholder="2" />
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="cancel">
+                            <span class="material-icons">close</span
+                            ><span class="title">Cancel</span>
+                        </button>
+                        <button class="submit">
+                            <span class="material-icons">done</span
+                            ><span class="title">Create</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <span class="no-server noselect">[ NO SERVER SELECTED ]</span>
+        </div>
+    </body>
 </html>
