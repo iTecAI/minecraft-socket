@@ -199,3 +199,99 @@ async def new_server(req: Request, res: Response):
     manager.start_server(fields['name'])
     
     return {'result': 'success'}
+
+@app.post('/servers/{name}/stop')
+async def stop_server(name: str, res: Response):
+    try:
+        manager.stop_server(name)
+        return {'result': 'success'}
+    except KeyError:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} not online.'}
+
+@app.post('/servers/{name}/delete')
+async def delete_server(name: str, res: Response):
+    try:
+        manager.stop_server(name)
+    except KeyError:
+        pass
+    database.servers.delete_one({'name': name})
+    return {'result': 'success'}
+
+@app.get('/servers/{name}/logs')
+async def get_logs(name: str, res: Response):
+    try:
+        manager.get_logs(name)
+        return {'result': 'success', 'logs': manager.get_logs(name)}
+    except KeyError:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} not online.'}
+
+@app.post('/servers/{name}/command')
+async def command_server(name: str, res: Response, req: Request):
+    fields = await req.json()
+    if not 'command' in fields.keys():
+        res.status_code = HTTP_400_BAD_REQUEST
+        return {'result': 'failure', 'reason': 'Command not passed'}
+    try:
+        manager.command_server(name, fields['command'])
+    except KeyError:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} not online.'}
+    return {'result': 'success'}
+
+@app.post('/servers/{name}/start')
+async def start_server(name: str, res: Response):
+    try:
+        manager.start_server(name)
+    except KeyError:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} not online.'}
+    return {'result': 'success'}
+
+@app.post('/servers/{name}/modify_spec')
+async def start_server(name: str, res: Response, req: Request):
+    fields = await req.json()
+    if not 'content' in fields.keys():
+        res.status_code = HTTP_400_BAD_REQUEST
+        return {'result': 'failure', 'reason': 'Content not passed.'}
+    if database.servers.find_one({'name': name}):
+        with open(os.path.join(CONFIG['server_folder'], name, 'server.properties'), 'w') as f:
+            f.write(fields['content'])
+    else:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} does not exist.'}
+
+@app.post('/servers/{name}/modify_properties')
+async def start_server(name: str, res: Response, req: Request):
+    fields = await req.json()
+    if not 'content' in fields.keys():
+        res.status_code = HTTP_400_BAD_REQUEST
+        return {'result': 'failure', 'reason': 'Content not passed.'}
+    if database.servers.find_one({'name': name}):
+        try:
+            database.servers.replace_one({'name': name}, json.loads(fields['content']))
+            return {'result': 'success'}
+        except:
+            res.status_code = HTTP_400_BAD_REQUEST
+            return {'result': 'failure', 'reason': 'Bad content format.'}
+    else:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} does not exist.'}
+
+@app.get('/servers/{name}/')
+async def get_server_info(name: str, res: Response):
+    spec = database.servers.find_one({'name': name})
+    if spec:
+        del spec['_id']
+        with open(os.path.join(CONFIG['server_folder'], name, 'server.properties'), 'r') as f:
+            props = f.read()
+        return {
+            'result': 'success',
+            'spec': spec,
+            'prop': props,
+            'running': name in manager.servers.keys()
+        }
+    else:
+        res.status_code = HTTP_404_NOT_FOUND
+        return {'result': 'failure', 'reason': f'Server {name} does not exist.'}
