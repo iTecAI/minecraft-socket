@@ -252,7 +252,7 @@ async def start_server(name: str, res: Response):
         return {'result': 'failure', 'reason': f'Server {name} not online.'}
     return {'result': 'success'}
 
-@app.post('/servers/{name}/modify_spec')
+@app.post('/servers/{name}/modify_prop')
 async def start_server(name: str, res: Response, req: Request):
     fields = await req.json()
     if not 'content' in fields.keys():
@@ -265,7 +265,7 @@ async def start_server(name: str, res: Response, req: Request):
         res.status_code = HTTP_404_NOT_FOUND
         return {'result': 'failure', 'reason': f'Server {name} does not exist.'}
 
-@app.post('/servers/{name}/modify_properties')
+@app.post('/servers/{name}/modify_spec')
 async def start_server(name: str, res: Response, req: Request):
     fields = await req.json()
     if not 'content' in fields.keys():

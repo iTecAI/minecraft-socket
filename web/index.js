@@ -7,6 +7,7 @@ var CURRENT_STATE = {
     interval: null,
     server: null,
 };
+var CURRENT_SPEC = {};
 
 function request(url, options) {
     if (!options) {
@@ -117,6 +118,7 @@ function updateServerList() {
                         CURRENT_STATE.server = null;
                         CURRENT_STATE.panel = null;
                         $(".panel > .console").hide();
+                        $(".panel > .settings").hide();
                     }
                     return $('<div class="server-item shadow-small"></div>')
                         .attr("data-name", v)
@@ -191,6 +193,7 @@ function updateServerList() {
                                         return;
                                     }
                                     clearInterval(CURRENT_STATE.interval);
+                                    $(".panel > .settings").hide();
                                     CURRENT_STATE.interval = null;
                                     if (
                                         CURRENT_STATE.panel == "console" &&
@@ -220,9 +223,45 @@ function updateServerList() {
                                 })
                         )
                         .append(
-                            $('<button class="edit-server"></button>').append(
-                                '<span class="material-icons">settings</span>'
-                            )
+                            $('<button class="edit-server"></button>')
+                                .append(
+                                    '<span class="material-icons">settings</span>'
+                                )
+                                .on("click", function (e) {
+                                    if (CURRENT_STATE.panel == "settings") {
+                                        $(".panel > .settings").hide();
+                                        clearInterval(CURRENT_STATE.interval);
+                                        CURRENT_STATE.interval = null;
+                                        CURRENT_STATE.server = null;
+                                        CURRENT_STATE.panel = null;
+                                        CURRENT_SPEC = {};
+                                        return;
+                                    }
+                                    $(".panel > .console").hide();
+                                    CURRENT_STATE.panel = "settings";
+                                    CURRENT_STATE.server = $(e.delegateTarget)
+                                        .parents(".server-item")
+                                        .attr("data-name");
+                                    clearInterval(CURRENT_STATE.interval);
+                                    CURRENT_STATE.interval = null;
+                                    request(
+                                        "/servers/" + CURRENT_STATE.server
+                                    ).then(function (data) {
+                                        CURRENT_SPEC = data.spec;
+                                        $(".props-edit").val(data.prop);
+                                        $(".server-autostart").prop(
+                                            "checked",
+                                            data.spec.enabled
+                                        );
+                                        $(
+                                            ".spec-settings .server-args input"
+                                        ).val(data.spec.java_args);
+                                        $(
+                                            ".spec-settings .server-memory input"
+                                        ).val(data.spec.max_memory);
+                                        $(".panel > .settings").show();
+                                    });
+                                })
                         );
                 })
             );
@@ -422,6 +461,88 @@ $(document).ready(function () {
             },
         });
         $(".command-input").val("");
+    });
+
+    $(".server-autostart").on("click", function () {
+        if (CURRENT_STATE.panel == "settings" && CURRENT_STATE.server) {
+            CURRENT_SPEC.enabled = $(".server-autostart").prop("checked");
+            request("/servers/" + CURRENT_STATE.server + "/modify_spec", {
+                method: "POST",
+                data: { content: JSON.stringify(CURRENT_SPEC) },
+            });
+        }
+    });
+
+    $(".spec-settings .server-args .save").on("click", function () {
+        if (CURRENT_STATE.panel == "settings" && CURRENT_STATE.server) {
+            CURRENT_SPEC.java_args = $(
+                ".spec-settings .server-args input"
+            ).val();
+            request("/servers/" + CURRENT_STATE.server + "/modify_spec", {
+                method: "POST",
+                data: { content: JSON.stringify(CURRENT_SPEC) },
+            });
+        }
+    });
+
+    $(".spec-settings .server-memory .save").on("click", function () {
+        if (
+            CURRENT_STATE.panel == "settings" &&
+            CURRENT_STATE.server &&
+            !isNaN(Number($(".spec-settings .server-memory input").val()))
+        ) {
+            CURRENT_SPEC.max_memory = Number(
+                $(".spec-settings .server-memory input").val()
+            );
+            request("/servers/" + CURRENT_STATE.server + "/modify_spec", {
+                method: "POST",
+                data: { content: JSON.stringify(CURRENT_SPEC) },
+            });
+        }
+    });
+
+    $(".save-prop").on("click", function () {
+        if (CURRENT_STATE.panel == "settings" && CURRENT_STATE.server) {
+            var s_ip = "";
+            var s_port = "25565";
+            $(".props-edit")
+                .val()
+                .split("\n")
+                .map(function (v, i, a) {
+                    if (v.includes("=")) {
+                        if (v.split("=")[0] == "server-ip") {
+                            s_ip = v.split("=")[1];
+                        }
+                        if (v.split("=")[0] == "server-port") {
+                            s_port = v.split("=")[1];
+                        }
+                    }
+                });
+            CURRENT_SPEC.address = s_ip + ":" + s_port;
+            request("/servers/" + CURRENT_STATE.server + "/modify_spec", {
+                method: "POST",
+                data: { content: JSON.stringify(CURRENT_SPEC) },
+            });
+            request("/servers/" + CURRENT_STATE.server + "/modify_prop", {
+                method: "POST",
+                data: { content: $(".props-edit").val() },
+            });
+        }
+    });
+
+    $(".delete-server").on("click", function () {
+        if (CURRENT_STATE.panel == "settings" && CURRENT_STATE.server) {
+            request("/servers/" + CURRENT_STATE.server + "/delete", {
+                method: "POST",
+            }).then(function () {
+                $(".panel > .settings").hide();
+                clearInterval(CURRENT_STATE.interval);
+                CURRENT_STATE.interval = null;
+                CURRENT_STATE.server = null;
+                CURRENT_STATE.panel = null;
+                CURRENT_SPEC = {};
+            });
+        }
     });
 
     setInterval(updateServerList, 2500);
