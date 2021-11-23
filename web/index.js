@@ -1,5 +1,12 @@
 var authenticating = false;
 var SAVEDDATA = null;
+var LASTSERVERLIST = null;
+var LAST_LOGS = null;
+var CURRENT_STATE = {
+    panel: null,
+    interval: null,
+    server: null,
+};
 
 function request(url, options) {
     if (!options) {
@@ -74,6 +81,153 @@ function load_newserver() {
         $(".new-server").show();
         $(".new-server input").val("");
         console.log(data);
+    });
+}
+
+function updateTerminal() {
+    request("/servers/" + CURRENT_STATE.server + "/logs")
+        .then(function (data) {
+            if (
+                data.logs.length != (LAST_LOGS != null ? LAST_LOGS.length : 0)
+            ) {
+                LAST_LOGS = data.logs;
+                $('<div class="log-area noscroll"></div>')
+                    .append(
+                        data.logs.map(function (v, i, a) {
+                            return $('<span class="line"></span>').text(v);
+                        })
+                    )
+                    .replaceAll(".log-area");
+                $(".log-area").scrollTop($(".log-area").height());
+            }
+        })
+        .fail(function () {});
+}
+
+function updateServerList() {
+    request("/servers").then(function (data) {
+        if (JSON.stringify(data) != JSON.stringify(LASTSERVERLIST)) {
+            LASTSERVERLIST = data;
+            var dummyList = $('<div class="server-list noscroll"></div>');
+            dummyList.append(
+                Object.keys(data).map(function (v, i, a) {
+                    if (!data[v].running && CURRENT_STATE.server == v) {
+                        clearInterval(CURRENT_STATE.interval);
+                        CURRENT_STATE.interval = null;
+                        CURRENT_STATE.server = null;
+                        CURRENT_STATE.panel = null;
+                        $(".panel > .console").hide();
+                    }
+                    return $('<div class="server-item shadow-small"></div>')
+                        .attr("data-name", v)
+                        .addClass(data[v].running ? "active" : "inactive")
+                        .append(
+                            $(
+                                '<span class="status material-icons noselect"></span>'
+                            )
+                                .addClass(
+                                    data[v].running ? "active" : "inactive"
+                                )
+                                .text(
+                                    data[v].running ? "check_circle" : "cancel"
+                                )
+                        )
+                        .append($('<span class="server-name"></span>').text(v))
+                        .append(
+                            $('<span class="subtitle"></span>').text(
+                                "@ " +
+                                    data[v].address +
+                                    " w/ " +
+                                    data[v].mem +
+                                    "GB RAM"
+                            )
+                        )
+                        .append(
+                            $('<button class="stop-start-server"></button>')
+                                .append(
+                                    data[v].running
+                                        ? '<span class="material-icons">stop</span>'
+                                        : '<span class="material-icons">play_arrow</span>'
+                                )
+                                .on("click", function (e) {
+                                    if (
+                                        $(e.delegateTarget)
+                                            .parents(".server-item")
+                                            .hasClass("active")
+                                    ) {
+                                        request(
+                                            "/servers/" +
+                                                $(e.delegateTarget)
+                                                    .parents(".server-item")
+                                                    .attr("data-name") +
+                                                "/stop",
+                                            { method: "POST" }
+                                        ).then(updateServerList);
+                                    } else {
+                                        request(
+                                            "/servers/" +
+                                                $(e.delegateTarget)
+                                                    .parents(".server-item")
+                                                    .attr("data-name") +
+                                                "/start",
+                                            { method: "POST" }
+                                        ).then(updateServerList);
+                                    }
+                                })
+                        )
+                        .append(
+                            $('<button class="view-server"></button>')
+                                .append(
+                                    '<span class="material-icons">terminal</span>'
+                                )
+                                .toggleClass(
+                                    "disabled",
+                                    data[v].running ? false : true
+                                )
+                                .on("click", function (e) {
+                                    if (
+                                        $(e.delegateTarget).hasClass("disabled")
+                                    ) {
+                                        return;
+                                    }
+                                    clearInterval(CURRENT_STATE.interval);
+                                    CURRENT_STATE.interval = null;
+                                    if (
+                                        CURRENT_STATE.panel == "console" &&
+                                        CURRENT_STATE.server ==
+                                            $(e.delegateTarget)
+                                                .parents(".server-item")
+                                                .attr("data-name")
+                                    ) {
+                                        CURRENT_STATE.panel = null;
+                                        CURRENT_STATE.server = null;
+                                        $(".panel > .console").hide();
+                                        return;
+                                    } else {
+                                        CURRENT_STATE.panel = "console";
+                                        CURRENT_STATE.server = $(
+                                            e.delegateTarget
+                                        )
+                                            .parents(".server-item")
+                                            .attr("data-name");
+                                        CURRENT_STATE.interval = setInterval(
+                                            updateTerminal,
+                                            1000
+                                        );
+                                        updateTerminal();
+                                        $(".panel > .console").show();
+                                    }
+                                })
+                        )
+                        .append(
+                            $('<button class="edit-server"></button>').append(
+                                '<span class="material-icons">settings</span>'
+                            )
+                        );
+                })
+            );
+            dummyList.replaceAll(".server-list");
+        }
     });
 }
 
@@ -238,4 +392,38 @@ $(document).ready(function () {
             $(".new-server").hide();
         });
     });
+
+    $(".command-input").on("change", function () {
+        if ($(".command-input").val().length == 0) {
+            return;
+        }
+        if (!CURRENT_STATE.server) {
+            return;
+        }
+        request("/servers/" + CURRENT_STATE.server + "/command", {
+            method: "POST",
+            data: {
+                command: $(".command-input").val(),
+            },
+        });
+        $(".command-input").val("");
+    });
+    $(".send-cmd-btn").on("click", function () {
+        if ($(".command-input").val().length == 0) {
+            return;
+        }
+        if (!CURRENT_STATE.server) {
+            return;
+        }
+        request("/servers/" + CURRENT_STATE.server + "/command", {
+            method: "POST",
+            data: {
+                command: $(".command-input").val(),
+            },
+        });
+        $(".command-input").val("");
+    });
+
+    setInterval(updateServerList, 2500);
+    updateServerList();
 });

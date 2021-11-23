@@ -19,11 +19,15 @@ class ServerManager:
             raise KeyError(f'Server {name} does not exist.')
         args = shlex.split(f'{shutil.which("java")} -Xmx{spec["max_memory"]}g -Xms1g {spec["java_args"]} -jar server.jar nogui')
         info(f'Starting server with args {args}')
-        self.servers[name] = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True, cwd=os.path.join(self.folder, name))
+        self.servers[name] = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, cwd=os.path.join(self.folder, name))
     
     def command_server(self, name, command='say hi'):
         if name in self.servers.keys():
-            self.servers[name].communicate(input=command+'\r\n')
+            if self.servers[name].poll() != None:
+                del self.servers[name]
+                return
+            self.servers[name].stdin.write(command+'\n')
+            self.servers[name].stdin.flush()
         else:
             raise KeyError(f'Server {name} is not online.')
     
@@ -33,6 +37,9 @@ class ServerManager:
     
     def get_logs(self, name):
         if name in self.servers.keys():
+            if self.servers[name].poll() != None:
+                del self.servers[name]
+                return
             with open(os.path.join(self.folder, name, 'logs', 'latest.log'), 'r') as f:
                 return f.read().split('\n')
         else:

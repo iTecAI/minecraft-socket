@@ -306,6 +306,8 @@ async def list_servers():
         if os.path.exists(os.path.join(CONFIG['server_folder'], s['name'])):
             server_dict[s['name']] = {
                 'autostart': s['enabled'],
-                'running': s['name'] in manager.servers.keys()
+                'running': s['name'] in manager.servers.keys(),
+                'address': s['address'],
+                'mem': s['max_memory']
             }
     return server_dict

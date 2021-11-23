@@ -97,6 +97,7 @@ body {
     font-size: 32px;
     transform: translate(-50%, -50%);
 }
+
 .server-container .server-list {
     position: absolute;
     top: 0px;
@@ -104,6 +105,77 @@ body {
     display: inline-block;
     width: 100%;
     height: 100%;
+    padding: 5px;
+}
+.server-list .server-item {
+    position: relative;
+    margin-bottom: 5px;
+    display: inline-block;
+    width: calc(100% - 10px);
+    border-radius: 5px;
+    background-color: var(--pd);
+    height: 88px;
+    overflow: hidden;
+}
+.server-list .server-item .status {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+.server-list .server-item .status.inactive {
+    color: #db3125;
+}
+.server-list .server-item .status.active {
+    color: var(--sd);
+}
+.server-list .server-item .server-name {
+    position: absolute;
+    top: 5px;
+    left: 34px;
+    color: var(--pt);
+}
+.server-list .server-item .subtitle {
+    position: absolute;
+    top: 34px;
+    left: 5px;
+    color: var(--pt);
+    font-size: 12px;
+    opacity: 0.5;
+}
+.server-list .server-item button {
+    position: absolute;
+    bottom: 0px;
+    display: inline-block;
+    width: calc(100% / 3);
+    height: 32px;
+    transition: background-color 0.2s;
+    background-color: var(--pd);
+    border: none;
+    cursor: pointer;
+}
+.server-list .server-item button span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 24px;
+    transform: translate(-50%, -50%);
+    color: var(--pt);
+}
+.server-list .server-item button:hover {
+    background-color: #0b161b;
+}
+.server-list .server-item button.stop-start-server {
+    left: 0px;
+}
+.server-list .server-item button.view-server {
+    left: calc(100% / 3);
+}
+.server-list .server-item button.view-server.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+.server-list .server-item button.edit-server {
+    right: 0px;
 }
 
 .panel {
@@ -365,4 +437,82 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 16px;
+}
+
+.panel .console .terminal-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-block;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    border-radius: 10px;
+    border: 1px solid var(--s);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.panel .console .terminal-container .log-area {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: inline-block;
+    width: 100%;
+    height: calc(100% - 32px);
+    background-color: #000;
+    color: white;
+    font-family: monospace;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--s);
+    padding: 10px;
+    overflow-y: scroll;
+}
+.panel .console .terminal-container .log-area .line {
+    display: block;
+}
+.panel .console .terminal-container .command-input {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    display: inline-block;
+    width: calc(100% - 32px);
+    height: 32px;
+    border: none;
+    background-color: var(--pd);
+    color: var(--pt);
+    box-sizing: border-box;
+    padding-left: 34px;
+    font-family: monospace;
+    font-size: 16px;
+    padding-top: 4px;
+}
+.panel .console .terminal-container .command-input:focus {
+    outline: none;
+}
+.panel .console .terminal-container .terminal-icon {
+    position: absolute;
+    bottom: 4px;
+    left: 5px;
+    color: var(--pt);
+}
+.panel .console .terminal-container .send-cmd-btn {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: var(--s);
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+.panel .console .terminal-container .send-cmd-btn:hover {
+    background-color: var(--sd);
+}
+.panel .console .terminal-container .send-cmd-btn .material-icons {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 24px;
+    transform: translate(-50%, -50%);
 }
